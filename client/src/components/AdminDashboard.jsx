@@ -37,6 +37,7 @@ const AdminDashboard = ({ onLogout }) => {
     // Form states for adding/editing
     const [showProjectModal, setShowProjectModal] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
     const [projectForm, setProjectForm] = useState({
         title: '', description: '', tech: '', image: null, category: 'Web Development Project', githubLink: '', liveLink: '', achievements: '', isFeatured: false
     });
@@ -89,6 +90,7 @@ const AdminDashboard = ({ onLogout }) => {
     // Project Logic
     const handleProjectSubmit = async (e) => {
         e.preventDefault();
+        setIsSaving(true);
         try {
             const formData = new FormData();
             formData.append('title', projectForm.title);
@@ -124,13 +126,15 @@ const AdminDashboard = ({ onLogout }) => {
         } catch (error) {
             console.error('Error saving project:', error);
             alert('Failed to save project. Please try again.');
+        } finally {
+            setIsSaving(false);
         }
     };
 
     const deleteProject = async (id) => {
         if (!window.confirm('Delete this project?')) return;
         try {
-            await axios.delete(`http://localhost:5000/api/projects/${id}`);
+            await api.delete(`/projects/${id}`);
             setProjects(projects.filter(p => p._id !== id));
             alert('Project deleted!');
         } catch (error) {
@@ -144,11 +148,11 @@ const AdminDashboard = ({ onLogout }) => {
         e.preventDefault();
         try {
             if (editingCertificate) {
-                const res = await axios.put(`http://localhost:5000/api/certificates/${editingCertificate._id}`, certificateForm);
+                const res = await api.put(`/certificates/${editingCertificate._id}`, certificateForm);
                 setCertificates(certificates.map(c => c._id === editingCertificate._id ? res.data.data : c));
                 alert('Certificate updated successfully!');
             } else {
-                const res = await axios.post('http://localhost:5000/api/certificates', certificateForm);
+                const res = await api.post('/certificates', certificateForm);
                 setCertificates([res.data.data, ...certificates]);
                 alert('Certificate created successfully!');
             }
@@ -164,7 +168,7 @@ const AdminDashboard = ({ onLogout }) => {
     const deleteCertificate = async (id) => {
         if (!window.confirm('Delete this certificate?')) return;
         try {
-            await axios.delete(`http://localhost:5000/api/certificates/${id}`);
+            await api.delete(`/certificates/${id}`);
             setCertificates(certificates.filter(c => c._id !== id));
             alert('Certificate deleted!');
         } catch (error) {
@@ -532,7 +536,17 @@ const AdminDashboard = ({ onLogout }) => {
                                 </div>
 
                                 <div className="flex gap-4 pt-4">
-                                    <button type="submit" className="flex-1 py-4 bg-primary text-white rounded-2xl font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">Save Project</button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSaving}
+                                        className={cn(
+                                            "flex-1 py-4 bg-primary text-white rounded-2xl font-bold shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-2",
+                                            isSaving ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.02] active:scale-[0.98]"
+                                        )}
+                                    >
+                                        {isSaving ? <Loader2 className="animate-spin" size={20} /> : null}
+                                        {editingProject ? 'Update Project' : 'Save Project'}
+                                    </button>
                                     <button type="button" onClick={() => setShowProjectModal(false)} className="px-10 py-4 bg-gray-100 dark:bg-gray-800 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">Cancel</button>
                                 </div>
                             </form>
