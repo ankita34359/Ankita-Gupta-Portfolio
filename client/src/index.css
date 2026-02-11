@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  /* Final Choice: Nordic Slate & Emerald Theme */
+  --color-primary: #10b981;
+  /* Emerald Green */
+  --color-dark-bg: #0f172a;
+  /* Deep Slate */
+  --color-dark-card: #1e293b;
+  /* Slate Card */
+  --color-dark-text: #ffffff;
+
+  /* Archived Themes
+  Midnight Purple & Rose:
+  --color-primary: #f43f5e;
+  --color-dark-bg: #0d0221;
+  --color-dark-card: #1a0b2e;
+
+  Zinc & Silver:
+  --color-primary: #fafafa;
+  --color-dark-bg: #09090b;
+  --color-dark-card: #18181b;
+
+  Obsidian & Amber:
+  --color-primary: #fbbf24;
+  --color-dark-bg: #050505;
+  --color-dark-card: #0d0d0d;
+
+  Original Blue:
+  --color-primary: #0070f3;
+  --color-dark-bg: #0a0a0a;
+  --color-dark-card: #111111;
+  */
+
+  --color-light-bg: #f8fafc;
+  /* Soft Off-White/Slate-50 */
+  --color-light-card: #ffffff;
+  /* Pure White for cards to Pop */
+  --color-light-text: #0f172a;
+  /* Deep Slate for high legibility */
+
+  --font-sans: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* Custom variant for class-based dark mode in v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-800 transition-colors duration-200;
+  }
+
+  body {
+    @apply bg-white text-black dark:bg-dark-bg dark:text-white;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.glass {
+  @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-white/20 dark:border-white/10;
+}
