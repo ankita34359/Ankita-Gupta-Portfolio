@@ -392,7 +392,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 <span>Add Project</span>
                             </button>
                         </header>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2 custom-scrollbar pb-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2 custom-scrollbar pb-10">
                             {projects.map(project => (
                                 <div key={project._id} className="bg-white dark:bg-dark-card rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all">
                                     <div className="aspect-video w-full relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-4 border border-gray-100 dark:border-gray-700">
@@ -452,7 +452,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 <span>Add Certificate</span>
                             </button>
                         </header>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2 custom-scrollbar pb-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2 custom-scrollbar pb-10">
                             {certificates.map(cert => (
                                 <div key={cert._id} className="bg-white dark:bg-dark-card rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all">
                                     <Award className="text-primary mb-4" size={32} />
