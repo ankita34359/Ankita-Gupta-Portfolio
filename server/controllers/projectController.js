@@ -12,9 +12,8 @@ const getProjects = async (req, res) => {
             data: projects
         });
     } catch (error) {
-        console.error('❌ Error in createProject:', error);
-        if (req.file) console.log('DEBUG: File received:', req.file);
-        res.status(400).json({ success: false, message: error.message || 'Error creating project' });
+        console.error('❌ Error in getProjects:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
@@ -47,8 +46,9 @@ const createProject = async (req, res) => {
             data: project
         });
     } catch (error) {
-        console.error('Error in createProject:', error);
-        res.status(400).json({ success: false, message: error.message });
+        console.error('❌ Error in createProject:', error);
+        if (req.file) console.log('DEBUG: File received (error):', req.file);
+        res.status(400).json({ success: false, message: error.message || 'Error creating project' });
     }
 };
 
@@ -66,7 +66,7 @@ const updateProject = async (req, res) => {
         const projectData = { ...req.body };
 
         if (req.file) {
-            projectData.image = `/uploads/projects/${req.file.filename}`;
+            projectData.image = req.file.path;
         }
 
         if (projectData.tech && typeof projectData.tech === 'string') {
