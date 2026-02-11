@@ -81,7 +81,7 @@ const Certificates = () => {
                                     <div className="h-full p-4 rounded-[2rem] border border-gray-100 dark:border-white/5 bg-white dark:bg-[#12121c] shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 flex flex-col">
                                         <div className="p-6 flex-1 flex flex-col">
                                             <div className="flex justify-between items-start mb-6">
-                                                <span className="text-xs font-bold text-primary px-3 py-1 bg-primary/10 rounded-full uppercase tracking-wider">{cert.date}</span>
+                                                <span className="text-xs font-bold text-primary px-3 py-1 bg-primary/10 rounded-full tracking-wider">{cert.date}</span>
                                                 <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
                                                     <Award size={24} />
                                                 </div>

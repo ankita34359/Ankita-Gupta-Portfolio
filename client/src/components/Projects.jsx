@@ -144,7 +144,7 @@ const Projects = () => {
                                         {/* Tech Tags */}
                                         <div className="flex flex-wrap gap-2 mb-6">
                                             {(Array.isArray(project.tech) ? project.tech : (project.tech || '').split(',')).map((t, idx) => (
-                                                <span key={idx} className="px-3 py-1 bg-primary/5 text-primary border border-primary/10 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                <span key={idx} className="px-3 py-1 bg-primary/5 text-primary border border-primary/10 rounded-full text-xs font-bold tracking-wider">
                                                     {t.trim()}
                                                 </span>
                                             ))}
