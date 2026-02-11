@@ -120,7 +120,7 @@ const AdminDashboard = ({ onLogout }) => {
             }
             setShowProjectModal(false);
             setEditingProject(null);
-            setProjectForm({ title: '', description: '', tech: '', image: null, category: 'Full Stack', githubLink: '', liveLink: '', achievements: '', isFeatured: false });
+            setProjectForm({ title: '', description: '', tech: '', image: null, category: 'Web Development Project', githubLink: '', liveLink: '', achievements: '', isFeatured: false });
         } catch (error) {
             console.error('Error saving project:', error);
             alert('Failed to save project. Please try again.');
@@ -325,7 +325,7 @@ const AdminDashboard = ({ onLogout }) => {
                             <button
                                 onClick={() => {
                                     setEditingProject(null);
-                                    setProjectForm({ title: '', description: '', tech: '', image: null, category: 'Full Stack', githubLink: '', liveLink: '', achievements: '', isFeatured: false });
+                                    setProjectForm({ title: '', description: '', tech: '', image: null, category: 'Web Development Project', githubLink: '', liveLink: '', achievements: '', isFeatured: false });
                                     setShowProjectModal(true);
                                 }}
                                 className="flex items-center space-x-2 px-6 py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-all"
