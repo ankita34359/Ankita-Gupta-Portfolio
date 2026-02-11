@@ -32,26 +32,25 @@ router.post('/upload', protect, upload.single('resume'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please upload a file' });
         }
 
-        // Upload to Cloudinary using stream
-        const uploadStream = () => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'portfolio/resume',
-                        resource_type: 'image',
-                        format: 'pdf',
-                        public_id: `resume_${Date.now()}`
-                    },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                stream.end(req.file.buffer);
-            });
-        };
+        console.log('DEBUG: Uploading resume buffer size:', req.file.buffer.length);
 
-        const result = await uploadStream();
+        // Convert buffer to base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(dataURI, {
+            folder: 'portfolio/resume',
+            resource_type: 'auto', // Cloudinary will detect PDF
+            public_id: `resume_${Date.now()}`
+        });
+
+        console.log('DEBUG: Cloudinary Resume Upload Result:', {
+            public_id: result.public_id,
+            resource_type: result.resource_type,
+            format: result.format,
+            secure_url: result.secure_url
+        });
 
         // Save or update in DB
         let resume = await Resume.findOne();
