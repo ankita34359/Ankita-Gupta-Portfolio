@@ -1,30 +1,8 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const Message = require('../models/Message');
 
-// Configure Nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
-    },
-    family: 4, // Force IPv4
-    debug: true,
-    logger: true
-});
-
-// Verify connection configuration and log status
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('❌ NODEMAILER CONNECTION ERROR:', error.message);
-        console.log('DEBUG: Email user:', process.env.EMAIL_USER || 'NOT SET');
-        const passLength = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '').length : 0;
-        console.log('DEBUG: Password length:', passLength, '(should be 16)');
-        console.log('DEBUG: Receiver Email:', process.env.RECEIVER_EMAIL || 'NOT SET');
-    } else {
-        console.log('✅ EMAIL SERVER IS READY');
-    }
-});
+// Configure Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // @desc    Send a new message
 // @route   POST /api/messages
@@ -44,35 +22,32 @@ const sendMessage = async (req, res) => {
             message
         });
 
-        // Send Email Notification
-        console.log('Attempting to send email from:', process.env.EMAIL_USER);
-        console.log('Sending to:', process.env.RECEIVER_EMAIL);
+        // Send Email Notification via Resend API
+        console.log('Attempting to send email via Resend API...');
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
+        const { data, error } = await resend.emails.send({
+            from: 'Portfolio <onboarding@resend.dev>', // Resend's default sender for unverified domains
             to: process.env.RECEIVER_EMAIL,
+            reply_to: email,
             subject: `New Portfolio Message: ${subject}`,
             html: `
-                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #10b981; border-radius: 10px;">
                     <h2 style="color: #10b981;">New Inquiry from ${name}</h2>
                     <p><strong>Email:</strong> ${email}</p>
                     <p><strong>Subject:</strong> ${subject}</p>
                     <p><strong>Message:</strong></p>
-                    <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #10b981;">
                         ${message}
                     </div>
                 </div>
             `
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ NODEMAILER SEND ERROR:', error.message);
-                console.log('Ensure EMAIL_USER and EMAIL_PASS are correct in Render settings.');
-            } else {
-                console.log('✅ EMAIL SENT SUCCESSFULLY:', info.response);
-            }
         });
+
+        if (error) {
+            console.error('❌ RESEND API ERROR:', error.message);
+        } else {
+            console.log('✅ EMAIL SENT SUCCESSFULLY VIA RESEND:', data.id);
+        }
 
         res.status(201).json({
             success: true,
