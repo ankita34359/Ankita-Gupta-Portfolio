@@ -127,8 +127,8 @@ const AdminDashboard = ({ onLogout }) => {
             setEditingProject(null);
             setProjectForm({ title: '', description: '', tech: '', image: null, category: 'Web Development Project', githubLink: '', liveLink: '', achievements: '', isFeatured: false });
         } catch (error) {
-            console.error('Error saving project:', error);
-            alert('Failed to save project. Please try again.');
+            console.error('❌ Error saving project:', error.response?.data || error.message);
+            alert(`Failed to save project: ${error.response?.data?.message || error.message}`);
         } finally {
             setIsSaving(false);
         }
@@ -194,8 +194,8 @@ const AdminDashboard = ({ onLogout }) => {
             setResumePath(res.data.filePath);
             alert('Resume updated successfully!');
         } catch (error) {
-            console.error('Error uploading resume:', error);
-            alert('Upload failed. Only PDFs are allowed.');
+            console.error('❌ Error uploading resume:', error.response?.data || error.message);
+            alert(`Upload failed: ${error.response?.data?.message || error.message}`);
         } finally {
             setIsUploading(false);
         }
@@ -551,7 +551,7 @@ const AdminDashboard = ({ onLogout }) => {
                                                         projectForm.image instanceof File ? (
                                                             <img src={URL.createObjectURL(projectForm.image)} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <img src={`${IMAGE_BASE_URL}${projectForm.image}`} className="w-full h-full object-cover" />
+                                                            <img src={projectForm.image?.startsWith('http') ? projectForm.image : `${IMAGE_BASE_URL}${projectForm.image}`} className="w-full h-full object-cover" />
                                                         )
                                                     ) : (
                                                         <>

@@ -12,8 +12,9 @@ const getProjects = async (req, res) => {
             data: projects
         });
     } catch (error) {
-        console.error('Error in getProjects:', error);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error('❌ Error in createProject:', error);
+        if (req.file) console.log('DEBUG: File received:', req.file);
+        res.status(400).json({ success: false, message: error.message || 'Error creating project' });
     }
 };
 
@@ -90,8 +91,9 @@ const updateProject = async (req, res) => {
             data: project
         });
     } catch (error) {
-        console.error('Error in updateProject:', error);
-        res.status(400).json({ success: false, message: error.message });
+        console.error('❌ Error in updateProject:', error);
+        if (req.file) console.log('DEBUG: File received:', req.file);
+        res.status(400).json({ success: false, message: error.message || 'Error updating project' });
     }
 };
 
