@@ -4,8 +4,8 @@ const Message = require('../models/Message');
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use SSL
+    port: 587,
+    secure: false, // Use STARTTLS
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
@@ -13,7 +13,9 @@ const transporter = nodemailer.createTransport({
     tls: {
         rejectUnauthorized: false
     },
-    family: 4 // Force IPv4 at the configuration level
+    family: 4, // Strictly force IPv4
+    debug: true, // Show detailed logs
+    logger: true // Log to console
 });
 
 // Verify connection configuration and log status
