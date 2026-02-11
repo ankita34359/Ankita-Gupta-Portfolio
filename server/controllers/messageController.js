@@ -10,15 +10,16 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Verify connection configuration
+// Verify connection configuration and log status
 transporter.verify((error, success) => {
     if (error) {
-        console.error('NODEMAILER CONNECTION ERROR:', error);
-        console.log('DEBUG: Email user used:', process.env.EMAIL_USER);
+        console.error('❌ NODEMAILER CONNECTION ERROR:', error.message);
+        console.log('DEBUG: Email user:', process.env.EMAIL_USER || 'NOT SET');
         const passLength = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '').length : 0;
-        console.log('DEBUG: Password length (should be 16):', passLength);
+        console.log('DEBUG: Password length:', passLength, '(should be 16)');
+        console.log('DEBUG: Receiver Email:', process.env.RECEIVER_EMAIL || 'NOT SET');
     } else {
-        console.log('EMAIL SERVER IS READY TO SEND MESSAGES');
+        console.log('✅ EMAIL SERVER IS READY');
     }
 });
 
@@ -63,9 +64,10 @@ const sendMessage = async (req, res) => {
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('NODEMAILER ERROR:', error);
+                console.error('❌ NODEMAILER SEND ERROR:', error.message);
+                console.log('Ensure EMAIL_USER and EMAIL_PASS are correct in Render settings.');
             } else {
-                console.log('EMAIL SENT SUCCESSFULLY:', info.response);
+                console.log('✅ EMAIL SENT SUCCESSFULLY:', info.response);
             }
         });
 
