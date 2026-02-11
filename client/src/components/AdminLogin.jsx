@@ -27,7 +27,11 @@ const AdminLogin = ({ onLogin }) => {
                 onLogin(true);
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+            if (!err.response) {
+                setError('Network Error: Please check your internet or wait for server to start.');
+            } else {
+                setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
