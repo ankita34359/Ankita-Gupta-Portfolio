@@ -3,12 +3,19 @@ const Message = require('../models/Message');
 
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/\s+/g, '') : ''
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
+// Nodemailer uses 'family' to force IPv4 (4) or IPv6 (6). Note: specified in host/port if not using 'service'.
+transporter.options.family = 4;
 
 // Verify connection configuration and log status
 transporter.verify((error, success) => {
