@@ -4,27 +4,24 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { resumeStorage } = require('../config/cloudinaryConfig');
+const { cloudinary } = require('../config/cloudinaryConfig');
+const Resume = require('../models/Resume');
+const { protect } = require('../middleware/authMiddleware');
 
+// Use memory storage for direct Cloudinary upload
+const storage = multer.memoryStorage();
 const upload = multer({
-    storage: resumeStorage,
+    storage: storage,
     fileFilter: (req, file, cb) => {
-        console.log('DEBUG: Multer fileFilter - Received file:', file.originalname, 'mimetype:', file.mimetype);
         const filetypes = /pdf/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
-
         if (mimetype && extname) {
             return cb(null, true);
-        } else {
-            console.warn('DEBUG: fileFilter rejected file. Mimetype:', file.mimetype, 'Ext:', path.extname(file.originalname));
-            cb(new Error('Error: Only PDF files are allowed!'), false);
         }
+        cb(new Error('Only PDFs are allowed!'));
     }
 });
-
-const Resume = require('../models/Resume');
-const { protect } = require('../middleware/authMiddleware');
 
 // @desc    Upload resume
 // @route   POST /api/resume/upload
@@ -35,19 +32,39 @@ router.post('/upload', protect, upload.single('resume'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please upload a file' });
         }
 
+        // Upload to Cloudinary using stream
+        const uploadStream = () => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'portfolio/resume',
+                        resource_type: 'auto',
+                        public_id: `resume_${Date.now()}`
+                    },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+        };
+
+        const result = await uploadStream();
+
         // Save or update in DB
         let resume = await Resume.findOne();
         if (resume) {
-            resume.url = req.file.path;
+            resume.url = result.secure_url;
             await resume.save();
         } else {
-            resume = await Resume.create({ url: req.file.path });
+            resume = await Resume.create({ url: result.secure_url });
         }
 
         res.status(200).json({
             success: true,
             message: 'Resume uploaded successfully',
-            filePath: req.file.path
+            filePath: result.secure_url
         });
     } catch (error) {
         console.error('❌ Error in resume upload:', error);
