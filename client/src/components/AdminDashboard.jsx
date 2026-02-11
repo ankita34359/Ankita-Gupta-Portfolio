@@ -397,7 +397,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 <div key={project._id} className="bg-white dark:bg-dark-card rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all">
                                     <div className="aspect-video w-full relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-4 border border-gray-100 dark:border-gray-700">
                                         {project.image ? (
-                                            <img src={`${IMAGE_BASE_URL}${project.image}`} alt={project.title} className="w-full h-full object-cover" />
+                                            <img src={project.image.startsWith('http') ? project.image : `${IMAGE_BASE_URL}${project.image}`} alt={project.title} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-4xl text-gray-400">🖼️</div>
                                         )}
@@ -480,7 +480,7 @@ const AdminDashboard = ({ onLogout }) => {
                             {resumePath && (
                                 <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
                                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Resume: resume.pdf</span>
-                                    <a href={`${IMAGE_BASE_URL}${resumePath}`} target="_blank" rel="noreferrer" className="text-primary hover:underline text-sm font-bold">View</a>
+                                    <a href={resumePath.startsWith('http') ? resumePath : `${IMAGE_BASE_URL}${resumePath}`} target="_blank" rel="noreferrer" className="text-primary hover:underline text-sm font-bold">View</a>
                                 </div>
                             )}
 

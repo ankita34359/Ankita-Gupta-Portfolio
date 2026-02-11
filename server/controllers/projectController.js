@@ -25,7 +25,7 @@ const createProject = async (req, res) => {
         const projectData = { ...req.body };
 
         if (req.file) {
-            projectData.image = `/uploads/projects/${req.file.filename}`;
+            projectData.image = req.file.path;
         }
 
         if (projectData.tech && typeof projectData.tech === 'string') {

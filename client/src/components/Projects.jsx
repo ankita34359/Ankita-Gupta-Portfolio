@@ -105,7 +105,7 @@ const Projects = () => {
                                     <div className="aspect-video overflow-hidden relative bg-[#f8f9fa] dark:bg-[#0a0a12] border-b border-gray-100 dark:border-white/5 p-4 flex items-center justify-center">
                                         {project.image ? (
                                             <img
-                                                src={`${IMAGE_BASE_URL}${project.image}`}
+                                                src={project.image.startsWith('http') ? project.image : `${IMAGE_BASE_URL}${project.image}`}
                                                 alt={project.title}
                                                 className="max-w-full max-h-full object-contain transition-all duration-500"
                                             />

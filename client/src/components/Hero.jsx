@@ -12,7 +12,7 @@ const Hero = () => {
             try {
                 const response = await api.get('/resume');
                 if (response.data.success && response.data.filePath) {
-                    setResumeUrl(`${IMAGE_BASE_URL}${response.data.filePath}`);
+                    setResumeUrl(response.data.filePath.startsWith('http') ? response.data.filePath : `${IMAGE_BASE_URL}${response.data.filePath}`);
                 }
             } catch (error) {
                 console.error('Error fetching resume:', error);

@@ -5,22 +5,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure storage for project images
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = './uploads/projects/';
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `project-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
+const { projectStorage } = require('../config/cloudinaryConfig');
 
 const upload = multer({
-    storage: storage,
+    storage: projectStorage,
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|webp/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());

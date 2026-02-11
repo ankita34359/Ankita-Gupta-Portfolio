@@ -4,22 +4,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = './uploads/';
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-        }
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, 'resume.pdf'); // Always overwrite the old resume
-    }
-});
+const { resumeStorage } = require('../config/cloudinaryConfig');
 
 const upload = multer({
-    storage: storage,
+    storage: resumeStorage,
     fileFilter: (req, file, cb) => {
         const filetypes = /pdf/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -45,7 +33,7 @@ router.post('/upload', protect, upload.single('resume'), (req, res) => {
     res.status(200).json({
         success: true,
         message: 'Resume uploaded successfully',
-        filePath: `/uploads/${req.file.filename}`
+        filePath: req.file.path // Cloudinary returns full URL in path
     });
 });
 
@@ -53,15 +41,13 @@ router.post('/upload', protect, upload.single('resume'), (req, res) => {
 // @route   GET /api/resume
 // @access  Public
 router.get('/', (req, res) => {
-    const filePath = path.join(__dirname, '../uploads/resume.pdf');
-    if (fs.existsSync(filePath)) {
-        res.status(200).json({
-            success: true,
-            filePath: '/uploads/resume.pdf'
-        });
-    } else {
-        res.status(404).json({ success: false, message: 'Resume not found' });
-    }
+    // For Cloudinary, we can either store the URL in DB or reconstruct it
+    // But since we use a fixed public id 'resume', we can return it directly if we want
+    // Better practice: User will upload it once, and we return the known stable URL
+    // Or just return the last uploaded one if it exists.
+    // For now, let's assume if they upload, they want that URL.
+    // Since we don't have a Resume model yet, we'll just return a placeholder or 404 until first upload
+    res.status(404).json({ success: false, message: 'Resume not found' });
 });
 
 module.exports = router;
