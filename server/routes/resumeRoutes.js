@@ -9,6 +9,7 @@ const { resumeStorage } = require('../config/cloudinaryConfig');
 const upload = multer({
     storage: resumeStorage,
     fileFilter: (req, file, cb) => {
+        console.log('DEBUG: Multer fileFilter - Received file:', file.originalname, 'mimetype:', file.mimetype);
         const filetypes = /pdf/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
@@ -16,7 +17,8 @@ const upload = multer({
         if (mimetype && extname) {
             return cb(null, true);
         } else {
-            cb('Error: PDFs Only!');
+            console.warn('DEBUG: fileFilter rejected file. Mimetype:', file.mimetype, 'Ext:', path.extname(file.originalname));
+            cb(new Error('Error: Only PDF files are allowed!'), false);
         }
     }
 });
