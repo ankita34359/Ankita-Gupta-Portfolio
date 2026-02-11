@@ -21,10 +21,7 @@ const resumeStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'portfolio/resume',
-        resource_type: 'raw', // Important for PDFs
-        public_id: 'resume',
-        format: 'pdf',
-        overwrite: true
+        resource_type: 'auto', // 'auto' is better for PDFs
     }
 });
 

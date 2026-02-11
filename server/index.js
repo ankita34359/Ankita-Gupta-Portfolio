@@ -37,6 +37,16 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
 app.use('/api/resume', require('./routes/resumeRoutes'));
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('🔥 Global Error Handler:', err.stack);
+  res.status(500).json({
+    success: false,
+    message: err.message || 'Something went wrong on the server',
+    error: process.env.NODE_ENV === 'production' ? {} : err
+  });
+});
+
 
 // Basic Route
 app.get('/', (req, res) => {

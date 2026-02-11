@@ -21,33 +21,55 @@ const upload = multer({
     }
 });
 
+const Resume = require('../models/Resume');
 const { protect } = require('../middleware/authMiddleware');
 
 // @desc    Upload resume
 // @route   POST /api/resume/upload
 // @access  Private (Admin)
-router.post('/upload', protect, upload.single('resume'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: 'Please upload a file' });
+router.post('/upload', protect, upload.single('resume'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Please upload a file' });
+        }
+
+        // Save or update in DB
+        let resume = await Resume.findOne();
+        if (resume) {
+            resume.url = req.file.path;
+            await resume.save();
+        } else {
+            resume = await Resume.create({ url: req.file.path });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Resume uploaded successfully',
+            filePath: req.file.path
+        });
+    } catch (error) {
+        console.error('❌ Error in resume upload:', error);
+        res.status(500).json({ success: false, message: error.message || 'Error uploading resume' });
     }
-    res.status(200).json({
-        success: true,
-        message: 'Resume uploaded successfully',
-        filePath: req.file.path // Cloudinary returns full URL in path
-    });
 });
 
 // @desc    Get resume path
 // @route   GET /api/resume
 // @access  Public
-router.get('/', (req, res) => {
-    // For Cloudinary, we can either store the URL in DB or reconstruct it
-    // But since we use a fixed public id 'resume', we can return it directly if we want
-    // Better practice: User will upload it once, and we return the known stable URL
-    // Or just return the last uploaded one if it exists.
-    // For now, let's assume if they upload, they want that URL.
-    // Since we don't have a Resume model yet, we'll just return a placeholder or 404 until first upload
-    res.status(404).json({ success: false, message: 'Resume not found' });
+router.get('/', async (req, res) => {
+    try {
+        const resume = await Resume.findOne();
+        if (!resume) {
+            return res.status(404).json({ success: false, message: 'Resume not found' });
+        }
+        res.status(200).json({
+            success: true,
+            filePath: resume.url
+        });
+    } catch (error) {
+        console.error('❌ Error getting resume:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 module.exports = router;
