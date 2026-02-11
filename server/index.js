@@ -44,13 +44,32 @@ app.get('/', (req, res) => {
 });
 
 // MongoDB Connection
+console.log('Attempting to connect to MongoDB...');
+if (!process.env.MONGODB_URI) {
+  console.error('CRITICAL: MONGODB_URI is not defined in environment variables!');
+} else {
+  const maskedUri = process.env.MONGODB_URI.replace(/:([^@]+)@/, ':****@');
+  console.log('DB URI (masked):', maskedUri.substring(0, 50) + '...');
+}
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('SUCCESS: Connected to MongoDB Atlas');
     const { createInitialAdmin } = require('./controllers/authController');
     createInitialAdmin();
   })
-  .catch(err => console.error('Could not connect to MongoDB:', err));
+  .catch(err => {
+    console.error('ERROR: Could not connect to MongoDB Atlas:');
+    console.error(err);
+  });
+
+mongoose.connection.on('error', err => {
+  console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected');
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
