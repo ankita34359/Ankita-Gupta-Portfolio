@@ -12,10 +12,9 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         rejectUnauthorized: false
-    }
+    },
+    family: 4 // Force IPv4 at the configuration level
 });
-// Nodemailer uses 'family' to force IPv4 (4) or IPv6 (6). Note: specified in host/port if not using 'service'.
-transporter.options.family = 4;
 
 // Verify connection configuration and log status
 transporter.verify((error, success) => {
