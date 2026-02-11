@@ -91,8 +91,8 @@ const Certificates = () => {
 
                                             {cert.description && (
                                                 <div className="pt-4 border-t border-gray-100 dark:border-white/5">
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
-                                                        &ldquo;{cert.description}&rdquo;
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed text-left">
+                                                        {cert.description}
                                                     </p>
                                                 </div>
                                             )}
