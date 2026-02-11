@@ -38,7 +38,8 @@ router.post('/upload', protect, upload.single('resume'), async (req, res) => {
                 const stream = cloudinary.uploader.upload_stream(
                     {
                         folder: 'portfolio/resume',
-                        resource_type: 'auto',
+                        resource_type: 'image',
+                        format: 'pdf',
                         public_id: `resume_${Date.now()}`
                     },
                     (error, result) => {

@@ -98,7 +98,8 @@ const Hero = () => {
                     <motion.div variants={itemVariants} className="flex flex-wrap gap-4 pt-4">
                         <a
                             href={resumeUrl}
-                            download="Ankita_Gupta_Resume.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-block"
                         >
                             <motion.button
