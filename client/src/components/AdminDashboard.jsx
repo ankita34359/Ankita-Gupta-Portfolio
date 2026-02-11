@@ -18,7 +18,9 @@ import {
     Edit3,
     ExternalLink,
     Github,
-    Upload
+    Upload,
+    Menu,
+    X
 } from 'lucide-react';
 import { api, IMAGE_BASE_URL } from '../api/config';
 import { cn } from '../lib/utils';
@@ -33,6 +35,7 @@ const AdminDashboard = ({ onLogout }) => {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [resumePath, setResumePath] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Form states for adding/editing
     const [showProjectModal, setShowProjectModal] = useState(false);
@@ -222,19 +225,57 @@ const AdminDashboard = ({ onLogout }) => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-black font-sans flex flex-col md:flex-row">
+            {/* Mobile Top Bar */}
+            <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-dark-card border-b border-gray-100 dark:border-gray-800 sticky top-0 z-[60]">
+                <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">A</div>
+                    <span className="font-bold dark:text-white">Admin Dashboard</span>
+                </div>
+                <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-500"
+                >
+                    <Menu size={24} />
+                </button>
+            </div>
+
+            {/* Sidebar Overlay (Mobile) */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] md:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Sidebar */}
-            <aside className="w-full md:w-64 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-gray-800 p-6 flex flex-col justify-between h-screen sticky top-0">
+            <aside className={cn(
+                "fixed inset-y-0 left-0 w-64 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-gray-800 p-6 flex flex-col justify-between h-screen z-[80] transition-transform duration-300 transform md:sticky md:top-0 md:translate-x-0",
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            )}>
                 <div>
-                    <div className="flex items-center space-x-2 mb-10 px-2">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">A</div>
-                        <span className="text-xl font-bold dark:text-white">Admin</span>
+                    <div className="flex items-center justify-between mb-10 px-2">
+                        <div className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">A</div>
+                            <span className="text-xl font-bold dark:text-white">Admin</span>
+                        </div>
+                        <button
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="md:hidden p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-400"
+                        >
+                            <X size={20} />
+                        </button>
                     </div>
 
                     <nav className="space-y-2">
-                        <TabButton id="messages" icon={MessageSquare} label="Messages" />
-                        <TabButton id="projects" icon={Briefcase} label="Projects" />
-                        <TabButton id="certificates" icon={Award} label="Certificates" />
-                        <TabButton id="resume" icon={FileText} label="Resume" />
+                        <div onClick={() => setIsSidebarOpen(false)}><TabButton id="messages" icon={MessageSquare} label="Messages" /></div>
+                        <div onClick={() => setIsSidebarOpen(false)}><TabButton id="projects" icon={Briefcase} label="Projects" /></div>
+                        <div onClick={() => setIsSidebarOpen(false)}><TabButton id="certificates" icon={Award} label="Certificates" /></div>
+                        <div onClick={() => setIsSidebarOpen(false)}><TabButton id="resume" icon={FileText} label="Resume" /></div>
                     </nav>
                 </div>
 
@@ -248,7 +289,7 @@ const AdminDashboard = ({ onLogout }) => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-6 md:p-10 overflow-hidden flex flex-col h-screen">
+            <main className="flex-1 p-4 md:p-10 flex flex-col min-h-[calc(100vh-64px)] md:h-screen md:overflow-hidden">
                 {activeTab === 'messages' && (
                     <>
                         <header className="flex justify-between items-center mb-8">
@@ -256,7 +297,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 <h1 className="text-3xl font-bold dark:text-white">Contact Messages</h1>
                                 <p className="text-gray-500 text-sm mt-1">Manage inquiries from your portfolio</p>
                             </div>
-                            <div className="relative hidden md:block w-72">
+                            <div className="relative w-full md:w-72 mt-4 md:mt-0">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="text"
@@ -267,7 +308,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 />
                             </div>
                         </header>
-                        <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden pb-4">
+                        <div className="flex-1 flex flex-col lg:flex-row gap-8 md:overflow-hidden pb-4">
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                                 {loading ? (
                                     <div className="h-40 flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={40} /></div>
@@ -295,24 +336,37 @@ const AdminDashboard = ({ onLogout }) => {
                             </div>
                             <AnimatePresence mode="wait">
                                 {selectedMessage && (
-                                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="w-full lg:w-[450px] bg-white dark:bg-dark-card rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-2xl p-8 flex flex-col">
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center"><User size={24} /></div>
-                                            <button onClick={() => deleteMessage(selectedMessage._id)} className="p-3 rounded-xl bg-red-50/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={20} /></button>
-                                        </div>
-                                        <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                                            <div>
-                                                <h2 className="text-2xl font-bold dark:text-white mb-2">{selectedMessage.name}</h2>
-                                                <div className="flex items-center text-gray-500 text-sm space-x-4">
-                                                    <span className="flex items-center"><MailIcon size={14} className="mr-1.5" /> {selectedMessage.email}</span>
-                                                    <span className="flex items-center"><Calendar size={14} className="mr-1.5" /> {new Date(selectedMessage.createdAt).toLocaleString()}</span>
-                                                </div>
+                                    <div className="fixed inset-0 z-[100] lg:relative lg:inset-auto lg:z-auto bg-black/40 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-0 flex items-center justify-center p-4">
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                                            className="w-full lg:w-[450px] max-h-[90vh] lg:h-full bg-white dark:bg-dark-card rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-2xl p-6 md:p-8 flex flex-col relative"
+                                        >
+                                            <button
+                                                onClick={() => setSelectedMessage(null)}
+                                                className="lg:hidden absolute top-6 right-6 p-2 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-500"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                            <div className="flex justify-between items-start mb-6 md:mb-8 pr-10 lg:pr-0">
+                                                <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-xl md:rounded-2xl flex items-center justify-center"><User size={20} className="md:w-6 md:h-6" /></div>
+                                                <button onClick={() => deleteMessage(selectedMessage._id)} className="p-2.5 md:p-3 rounded-lg md:rounded-xl bg-red-50/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={18} className="md:w-5 md:h-5" /></button>
                                             </div>
-                                            <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800"><p className="font-bold dark:text-white text-sm">{selectedMessage.subject}</p></div>
-                                            <div className="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm"><p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap text-sm">{selectedMessage.message}</p></div>
-                                        </div>
-                                        <a href={`mailto:${selectedMessage.email}`} className="mt-8 w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-lg"><span>Reply via Email</span><ArrowRight size={18} /></a>
-                                    </motion.div>
+                                            <div className="space-y-4 md:space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                                <div>
+                                                    <h2 className="text-xl md:text-2xl font-bold dark:text-white mb-2">{selectedMessage.name}</h2>
+                                                    <div className="flex flex-col md:flex-row md:items-center text-gray-500 text-xs md:text-sm space-y-1 md:space-y-0 md:space-x-4">
+                                                        <span className="flex items-center"><MailIcon size={12} className="mr-1.5" /> {selectedMessage.email}</span>
+                                                        <span className="flex items-center"><Calendar size={12} className="mr-1.5" /> {new Date(selectedMessage.createdAt).toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="p-3 md:p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800"><p className="font-bold dark:text-white text-xs md:text-sm">{selectedMessage.subject}</p></div>
+                                                <div className="p-4 md:p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm"><p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap text-sm">{selectedMessage.message}</p></div>
+                                            </div>
+                                            <a href={`mailto:${selectedMessage.email}`} className="mt-6 md:mt-8 w-full py-3.5 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-lg text-sm md:text-base"><span>Reply via Email</span><ArrowRight size={16} className="md:w-[18px] md:h-[18px]" /></a>
+                                        </motion.div>
+                                    </div>
                                 )}
                             </AnimatePresence>
                         </div>
@@ -443,8 +497,8 @@ const AdminDashboard = ({ onLogout }) => {
                 )}
 
                 {showProjectModal && (
-                    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6">
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-dark-card w-full max-w-3xl rounded-[2.5rem] p-10 overflow-y-auto max-h-[90vh] shadow-2xl border border-gray-100 dark:border-gray-800">
+                    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-dark-card w-full max-w-3xl rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 overflow-y-auto max-h-[90vh] shadow-2xl border border-gray-100 dark:border-gray-800">
                             <div className="flex justify-between items-center mb-8">
                                 <h2 className="text-3xl font-bold dark:text-white">{editingProject ? 'Edit Project' : 'Add New Project'}</h2>
                                 <button onClick={() => setShowProjectModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">✕</button>
@@ -555,12 +609,12 @@ const AdminDashboard = ({ onLogout }) => {
                 )}
 
                 {showCertificateModal && (
-                    <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-6">
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-dark-card w-full max-w-2xl rounded-[2.5rem] p-10">
+                    <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-dark-card w-full max-w-2xl rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 overflow-y-auto max-h-[90vh]">
                             <h2 className="text-2xl font-bold mb-6">{editingCertificate ? 'Edit Certificate' : 'Add New Certificate'}</h2>
                             <form onSubmit={handleCertificateSubmit} className="space-y-4">
                                 <input type="text" placeholder="Name" value={certificateForm.name} onChange={e => setCertificateForm({ ...certificateForm, name: e.target.value })} className="w-full p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 outline-none" required />
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input type="text" placeholder="Issuer" value={certificateForm.issuer} onChange={e => setCertificateForm({ ...certificateForm, issuer: e.target.value })} className="p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 outline-none" required />
                                     <input type="text" placeholder="Date/Year" value={certificateForm.date} onChange={e => setCertificateForm({ ...certificateForm, date: e.target.value })} className="p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 outline-none" required />
                                 </div>
