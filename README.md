@@ -14,7 +14,7 @@ The platform allows real-time updates, secure authentication, scalable media han
 
   * Projects
   * Certificates
-  * Skills
+  * Resume
 * No manual code changes required for updates.
 
 ### ☁️ Scalable Media Integration
@@ -89,79 +89,6 @@ portfolio-cms/
 
 ---
 
-## ⚙️ Installation & Setup
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/your-username/portfolio-cms.git
-cd portfolio-cms
-```
-
-### 2️⃣ Install Dependencies
-
-**Backend**
-
-```bash
-cd server
-npm install
-```
-
-**Frontend**
-
-```bash
-cd ../client
-npm install
-```
-
----
-
-## 🔑 Environment Variables
-
-Create a `.env` file inside the **server** folder:
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_password
-
-RESEND_API_KEY=your_resend_key
-```
-
----
-
-## ▶️ Running the Application
-
-**Start Backend**
-
-```bash
-cd server
-npm run dev
-```
-
-**Start Frontend**
-
-```bash
-cd client
-npm run dev
-```
-
-App will run at:
-
-```
-Frontend → http://localhost:5173
-Backend  → http://localhost:5000
-```
-
----
-
 ## 🔐 Admin Access
 
 Admin authentication is secured using **JWT tokens** and encrypted passwords via **Bcrypt.js**.
@@ -170,7 +97,7 @@ You can:
 
 * Add / Edit / Delete Projects
 * Upload Certificates
-* Manage Skills
+* Upload Resume
 * Handle Contact Requests
 
 ---
@@ -178,9 +105,13 @@ You can:
 ## 📈 Key Highlights
 
 ✔ Real-time portfolio updates without redeployment
+
 ✔ Production-ready authentication & API architecture
+
 ✔ Optimized media delivery using Cloudinary CDN
+
 ✔ Clean, responsive UI with modern animations
+
 ✔ Scalable structure suitable for freelancers, developers, or agencies
 
 ---
